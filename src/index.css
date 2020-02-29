@@ -1,0 +1,32 @@
+
+body {
+  margin: 0;
+  font-family: 'Titillium Web', sans-serif!important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: rgb(43, 43, 43)!important;
+  color:white!important;
+  overflow-x: hidden;
+}
+
+.line {
+  fill: none;
+  stroke: #ff1601c2;
+  stroke-width: 2px;
+}
+.overlay {
+  fill: none;
+  pointer-events: all;
+}
+
+/* Style the dots by assigning a fill and stroke */
+.dot {
+    fill: #ff1601c2;
+    
+}
+  
+  .focus circle {
+  fill: none;
+  stroke: #ff1601c2;
+}
+
