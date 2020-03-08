@@ -1,14 +1,15 @@
+
 const initialState = {
-    circuit_results: [],
-    circuit_result: {}
+    driver_wins: [],
+    driver_win: {}
   };
   
   export default function(state = initialState, action) {
     switch (action.type) {
-      case "CIRCUIT_RESULTS":
+      case "DRIVER_WINS":
         return {
           ...state,
-          circuit_results: action.payload
+          driver_wins: action.payload
         };
       
         

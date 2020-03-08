@@ -34,19 +34,19 @@ class Content extends Component {
   render() {
     
     return (  
-      <div>
-        <div className="container mt-3">
-          <div className="row">
-            <div className="col-12 col-md-2 mb-2">
+      <div style={{height:"100vh",overflowX:"auto"}} id="style-1">
+       
+          <div className="row" >
+            <div className="col-12 col-md-2 mb-2"style={{paddingRight:"0"}} >
               <input type="text" id="search" className="form-control mr-sm-2" placeholder="Search" value={this.state.value} onChange={this.handleChange}></input>
             </div>
-            <div className="col-md-10">
+            <div className="col-md-10" style={{paddingRight:"0"}}>
               {this.state.filtered.map(circuit => (
                 <Circuit key={circuit.id} circuit={circuit} />
               ))}
             </div>
           </div>
-        </div>
+        
       </div>
     );
   }

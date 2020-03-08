@@ -1,17 +1,16 @@
+
 const initialState = {
-    circuit_results: [],
-    circuit_result: {}
+    constructors: [],
+    constructor: {}
   };
   
   export default function(state = initialState, action) {
     switch (action.type) {
-      case "CIRCUIT_RESULTS":
+      case "CONSTRUCTORS":
         return {
           ...state,
-          circuit_results: action.payload
+          constructors: action.payload
         };
-      
-        
       default:
         return state;
     }

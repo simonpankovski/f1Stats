@@ -1,0 +1,107 @@
+.style-1::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  background-color: #f5f5f5;
+}
+
+.style-1::-webkit-scrollbar {
+  width: 8px;
+  background-color: #f5f5f5;
+}
+
+.style-1::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: rgb(179, 179, 179);
+}
+.iconStyle {
+  font-size: 3vw;
+  color: white;
+  padding: 10px;
+  border-radius: 10%;
+  margin-right: 0;
+}
+.numberStyle {
+  width: 18%;
+  height: 12%;
+  background: #ff1601c2;
+  padding: 10px;
+  border-radius: 10%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2vw;
+}
+.cardBodyStyle {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  justify-content: space-between;
+}
+.cardTextStyle {
+  text-align: center;
+  font-size: 1.2vw;
+  font-weight: bold;
+}
+@media only screen and (max-width: 771px) {
+  .iconStyle {
+    font-size: 5vw;
+  }
+  .paddingLeft {
+    padding-left: 15px !important;
+  }
+  .numberStyle {
+    width: 10%;
+    height: 25%;
+    font-size: 1.9vw;
+  }
+  .cardTextStyle {
+    text-align: center;
+    font-size: 2.5vw;
+    font-weight: bold;
+  }
+}
+.cardSpecial {
+  height: 50vh;
+}
+.a {
+    order: 1;
+  }
+  .b {
+    order: 2;
+  }
+@media only screen and (max-width: 845px) {
+  .a {
+    order: 2;
+  }
+  .b {
+    order: 1;
+  }
+  .font {
+    font-size: 0.9rem;
+  }
+  .cardSpecial .card-body {
+    padding: 4px;
+    
+  }
+  .cardSpecial{
+      height: 30vh;
+  }
+  .lastCard {
+    height: 80vh!important;
+  }
+  .iconStyle {
+    font-size: 10vw;
+  }
+  .cardTextStyle {
+    
+    font-size: 4vw;
+    
+  }
+  .numberStyle {
+    width: 14%;
+    height: 30%;
+    font-size: 3vw;
+  }
+}

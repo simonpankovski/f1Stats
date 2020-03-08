@@ -1,0 +1,14 @@
+.bar { fill: #ff1601c2; }
+div.tooltip {	
+    position: absolute;			
+    text-align: center;			
+    width: 60px;					
+    height: 88px;					
+    padding: 10px;				
+    font: 12px sans-serif;		
+    background: #0a0101;	
+    border: 0px;		
+    border-radius: 3px;			
+    pointer-events: none;			
+    color:white;
+  }

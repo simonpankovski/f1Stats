@@ -6,7 +6,7 @@ export default class Navbar extends Component {
   render() {
     return (
       <div>
-        <nav className="navbar navbar-expand-lg navbar-dark">
+        <nav className="navbar navbar-expand-lg navbar-dark shadow">
           <div className="container">
             <Link className="navbar-brand" to="/">
               <img src={logo} style={{ width: "60px" }} alt="F1 logo"></img>
@@ -24,39 +24,9 @@ export default class Navbar extends Component {
             </button>
             <div className="collapse navbar-collapse" id="navbarNav">
               <ul className="navbar-nav mr-auto">
-                <li className="nav-item dropdown">
-                  <a
-                    className="nav-link dropdown-toggle"
-                    
-                    id="navbarDropdown"
-                    role="button"
-                    data-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                  >
-                     
-                    STATS
-                  </a>
-                  
-                  <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <Link className="dropdown-item" to="/Circuits">
-                      Circuits
-                    </Link>
-                    <Link className="dropdown-item" to="/Seasons">
-                      Seasons
-                    </Link>
-                    <div className="dropdown-divider"></div>
-                    <a className="dropdown-item" href="#">
-                      Something else here
-                    </a>
-                  </div>
-                </li>
-                <li className="nav-item ">
-                  
-                </li>
                 <li className="nav-item">
                   <Link className="nav-link" to="/Favorite">
-                    FAVORITES/FANTASY LEAGUE
+                    FANTASY
                   </Link>
                 </li>
               </ul>

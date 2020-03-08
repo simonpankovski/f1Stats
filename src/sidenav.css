@@ -1,0 +1,9 @@
+#sidenav{
+    height: 100vh;
+    background: rgb(216, 216, 216);
+}
+#sidenav li,#sidenav a {
+    background: rgb(216, 216, 216);
+    color: black;
+}
+

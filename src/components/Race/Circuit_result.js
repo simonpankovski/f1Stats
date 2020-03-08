@@ -1,14 +1,133 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { getResultsByCircuit } from "../../actions";
+import * as actionCreators from "../../actions";
+import $ from "jquery";
 import * as d3 from "d3";
 import "./pie_chart.css";
+import axios from "axios";
+import cheerio from "cheerio";
+import store from "../../store";
+import ReactHtmlParser from "react";
 class Circuit_result extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      url: "",
+      info: "",
+      years: []
+    };
+  }
   componentDidMount() {
     this.props.getResultsByCircuit(this.props.match.params.id);
+
+    this.unsubscribe = store.subscribe(() => {
+      let temp = store.getState().circuit_result.circuit_results;
+      let positions = this.countPositionsGained(temp.res);
+      let tmp = this.removeNullFromResults(temp.res);
+      let years = this.getYearsList(temp).sort((a, b) => {
+        if (a < b) return 1;
+        else return -1;
+      });
+      this.setState({ years });
+      let driver = this.getDriverNameAndMaxSpeedAndYear(tmp[1]);
+      this.createPieChart(temp, this.props.location.state.name);
+      this.createSecondPieChart(positions);
+
+      if (Object.entries(tmp[0]).length > 0) {
+        let xd = `<div class="card">
+        <div class="card-body" style='height: 400px;'>
+          
+            <span style='margin-top: 20px;'>
+              ${driver[0]} with an average speed of ${driver[1]} kph
+            </span>
+          
+          <div id="my_dataviz"></div>
+        </div>
+      </div>`;
+        $("#appendHere").html(xd);
+        this.createChart(tmp[0]);
+      }
+      //this.setState({ races: res }, this.createChart(res));
+    });
+    this.getWiki(this.props.location.state.name);
   }
-  createChart(results) {
+  componentWillUnmount() {
+    this.unsubscribe();
+  }
+  getWiki(circuit) {
+    axios
+      .post("http://localhost:9090/users/login", {
+        username: "test1@gmail.com",
+        password: "password"
+      })
+      .then(login =>
+        axios
+          .get("http://localhost:9090/results/image/" + circuit, {
+            headers: { Authorization: login.data.token }
+          })
+          .then(res => {
+            const a = cheerio.load(res.data.parse.text);
+            let images = a("div")[1];
+            if (images.attribs.class == "redirectMsg") {
+              let ref = a("a")[0].attribs.href.split("/").slice(-1)[0];
+
+              axios
+                .get(
+                  "http://localhost:9090/results/image/" +
+                    ref,
+                  {
+                    headers: { Authorization: login.data.token }
+                  }
+                )
+                .then(response => {
+                  const b = cheerio.load(response.data.parse.text);
+                  let images = b("img")[2];
+                  b("img").each((i,item)=>{if(!item.attribs.alt.includes("Logo") && item.attribs.alt.includes("Circuit"))  images = item})
+                  console.log(b("img"))
+                  let p = b("p")[0];
+                  
+                  let str = "";
+                  p.children.forEach(item => {
+                    if (item.type == "text") str += item.data;
+                    else {
+                      if (item.name == "a") str += item.children[0].data;
+                      else if ((item.name = "b")) {
+                        if (item.children[0].name == "a") str += "";
+                        else str += "<b>" + item.children[0].data + "</b>";
+                      }
+                    }
+                  });
+                  this.setState({ url: images.attribs.src, info: str });
+                  return images.attribs.src;
+                });
+            } else {
+              const a = cheerio.load(res.data.parse.text);
+              let images = a("img")[0];
+             a("img").each((i,item)=>{if(!item.attribs.alt.includes("Logo") && item.attribs.alt.includes("Circuit"))  images = item})
+              console.log(a("img"))
+              
+              let p = a("p")[1];
+              let str = "";
+              p.children.forEach(item => {
+                if (item.type == "text") str += item.data;
+                else {
+                  if (item.name == "a") str += item.children[0].data;
+                  else if ((item.name = "b")) {
+                    if (item.children[0].name == "a") str += "";
+                    else str += "<b>" + item.children[0].data + "</b>";
+                  }
+                }
+              });
+
+              this.setState({ url: images.attribs.src, info: str });
+              return images.attribs.src;
+            }
+          })
+      );
+  }
+  createChart(results, name) {
     // set the dimensions and margins of the graph
+
     if (
       results === undefined ||
       (Object.entries(results).length === 0 && results.constructor === Object)
@@ -31,8 +150,22 @@ class Circuit_result extends Component {
 
     // set the dimensions and margins of the graph
     var margin = { top: 20, right: 40, bottom: 30, left: 50 },
-      width = window.innerWidth*0.96 - margin.left - margin.right,
-      height = window.innerHeight - margin.top - margin.bottom;
+      width =
+        $("#my_dataviz")
+          .parent()
+          .css("width")
+          .slice(0, -2) *
+          0.96 -
+        margin.left -
+        margin.right,
+      height =
+        $("#my_dataviz")
+          .parent()
+          .css("height")
+          .slice(0, -2) -
+        100 -
+        margin.top -
+        margin.bottom;
     // parse the date / time
     var parseTime = d3.timeParse("%Y");
     // set the ranges
@@ -86,7 +219,7 @@ class Circuit_result extends Component {
         return d.speed;
       })
     ]);
-    console.log(data);
+
     // Add the valueline path.
     svg
       .append("path")
@@ -128,7 +261,6 @@ class Circuit_result extends Component {
       })
       .attr("r", 5)
       .on("mouseover", function(d) {
-        console.log(d);
         div
           .transition()
           .duration(200)
@@ -173,8 +305,18 @@ class Circuit_result extends Component {
       }
     ];
     // set the dimensions and margins of the graph
-    var width = 450,
-      height = 450,
+    var width =
+        $("#pie_chart")
+          .parent()
+          .width() *
+          0.9 -
+        110,
+      height =
+        $("#pie_chart")
+          .parent()
+          .width() *
+          0.9 -
+        110,
       margin = 40;
 
     // The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
@@ -217,7 +359,7 @@ class Circuit_result extends Component {
         "d",
         d3
           .arc()
-          .innerRadius(100) // This is the size of the donut hole
+          .innerRadius(0) // This is the size of the donut hole
           .outerRadius(radius)
       )
       .attr("fill", function(d) {
@@ -267,11 +409,19 @@ class Circuit_result extends Component {
           value.surname +
           " set the quickest lap time of " +
           value.fastestLap +
-          " in the year  " +
+          " in " +
           value.year;
       }
     }
     return [driver, max];
+  }
+  getYearsList(results) {
+    let years = results.res;
+    let arr = [];
+    years.forEach(item => {
+      if (!arr.includes(item.race.year)) arr.push(item.race.year);
+    });
+    return arr;
   }
   countPositionsGained(obj) {
     if (obj === undefined) return [];
@@ -289,7 +439,6 @@ class Circuit_result extends Component {
     return [count, equal, less, count + equal + less];
   }
   createSecondPieChart(results) {
-    console.log(results);
     var data = [
       {
         name: "Improved",
@@ -306,9 +455,19 @@ class Circuit_result extends Component {
     ];
     var text = "";
 
-    var width = 260;
-    var height = 260;
-    var thickness = 40;
+    var width =
+      $("#pie2")
+        .parent()
+        .width() *
+        0.9 -
+      150;
+    var height =
+      $("#pie2")
+        .parent()
+        .width() *
+        0.9 -
+      150;
+    var thickness = 80;
     var duration = 750;
 
     var radius = Math.min(width, height) / 2;
@@ -372,6 +531,9 @@ class Circuit_result extends Component {
       .append("path")
       .attr("d", arc)
       .attr("fill", (d, i) => color(i))
+      .attr("stroke", "black")
+      .style("stroke-width", "2px")
+      .style("opacity", 0.7)
       .on("mouseover", function(d) {
         d3.select(this)
           .style("cursor", "pointer")
@@ -395,86 +557,150 @@ class Circuit_result extends Component {
     //const race  = this.props.race;
     const { name } = this.props.location.state;
     const results = this.props.circuit_result.circuit_results;
-
     let positions = this.countPositionsGained(results.res);
 
     let tmp = this.removeNullFromResults(results.res);
     let driver = this.getDriverNameAndMaxSpeedAndYear(tmp[1]);
-    console.log(results.all - results.finished);
+    console.log(results);
     return (
-      <div>
-        <h2 style={{color:"#ff1601c2"}}> {name} </h2>
-        {driver[1] != 0 && (
-          <p style={{marginTop:"20px"}}>
-            Driver {driver[0]} with an average speed of {driver[1]} kph
-          </p>
-        )}
-        <div id="my_dataviz"></div>
-        {this.createChart(tmp[0])}
+      <div
+        style={{
+          paddingRight: "15px",
+          height: "100vh",
+          overflowY: "auto",
+          paddingBottom: "35px"
+        }}
+        className="style-1"
+      >
+        <div className="card">
+          <h2
+            className="card-header"
+            style={{ color: "#ff1601c2", fontWeight: "500" }}
+          >
+            {name}
+          </h2>
+        </div>
 
-        
-        <div className="row">
-          <div className="col-6">
-            <div id="pie_chart"></div>
-            {this.createPieChart(results)}
-            <div
-              style={{
-                background: "#f58442",
-                width: "10px",
-                height: "10px",
-                display: "inline-block"
-              }}
-            ></div>{" "}
-            <span>
-              Number of race finishes by all drivers: {results.finished}
-            </span>
-            <br />
-            <div
-              style={{
-                background: "#bf3939",
-                width: "10px",
-                height: "10px",
-                display: "inline-block"
-              }}
-            ></div>{" "}
-            <span>Number of race DNF's: {results.all-results.finished}</span>
-            <p>
-              Percentage of finishes vs DNF's:{" "}
-              {Math.round(
-                (results.finished / results.all + Number.EPSILON) * 100
-              )}
-              %
-            </p>
+        <div className="row" id="here">
+          <div className="col-3" style={{paddingRight:"0"}}>
+            <div className="card" style={{ height: "400px" }}>
+              <div className="card-body p-3">
+                <img
+                  src={this.state.url}
+                  alt=""
+                  style={{
+                    width: "100%",
+                    height: "60%",
+                    maxHeight: "320px",
+                    maxWidth: "256px"
+                  }}
+                ></img>
+              </div>
+            </div>
           </div>
-          <div className="col-6">
-            <div id="pie2"></div>
-            {this.createSecondPieChart(positions)}
-            <p>
-              Finished above the starting position:{" "}
-              {Math.round((positions[0] / positions[3] + Number.EPSILON) * 100)}
-              %{" "}
-            </p>
-            <p>
-              Finished below the starting position:{" "}
-              {Math.round((positions[2] / positions[3] + Number.EPSILON) * 100)}
-              %{" "}
-            </p>
-            <p>
-              Position didn't change:{" "}
-              {Math.round((positions[1] / positions[3] + Number.EPSILON) * 100)}
-              %{" "}
-            </p>
+          <div className="col-7" style={{paddingLeft:"6px"}}>
+            <div className="card" style={{ height: "400px" }}>
+              <div className="card-body">
+                <h5>Info</h5>
+                <p dangerouslySetInnerHTML={{ __html: this.state.info }}></p>
+              </div>
+            </div>
+          </div>
+          <div className="col-2">
+            <div className="card style-1" style={{ height: "400px",overflowY:"auto" }}>
+            <h5>Seasons</h5>
+              <div className="card-body">
+                
+                {this.state.years.map((year,i)=>(
+                  <span key={i}>{year}<br/></span>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="col-12" id="appendHere"></div>
+        </div>
+
+        <div className="row">
+          <div className="col-12 col-md-6">
+            <div className="card">
+              <h5 className="card-header">Individual races completed</h5>
+              <div className="card-body">
+                <div id="pie_chart"></div>
+                <div
+                  style={{
+                    background: "#f58442",
+                    width: "10px",
+                    height: "10px",
+                    display: "inline-block"
+                  }}
+                ></div>{" "}
+                <span>
+                  Number of race finishes by all drivers: {results.finished}
+                </span>
+                <br />
+                <div
+                  style={{
+                    background: "#bf3939",
+                    width: "10px",
+                    height: "10px",
+                    display: "inline-block"
+                  }}
+                ></div>{" "}
+                <span>
+                  Number of race DNF's: {results.all - results.finished}
+                </span>
+                <br />
+                <span>
+                  Percentage of finishes vs DNF's:{" "}
+                  {Math.round(
+                    (results.finished / results.all + Number.EPSILON) * 100
+                  )}
+                  %
+                </span>
+                <br />
+              </div>
+            </div>
+          </div>
+          <div className="col-12 col-md-6">
+            <div className="card">
+              <h5 className="card-header">Starting grid vs. final position</h5>
+              <div className="card-body">
+                <div id="pie2"></div>
+
+                <span>
+                  Finished above the starting position:{" "}
+                  {Math.round(
+                    (positions[0] / positions[3] + Number.EPSILON) * 100
+                  )}
+                  %{" "}
+                </span>
+                <br />
+                <span>
+                  Finished below the starting position:{" "}
+                  {Math.round(
+                    (positions[2] / positions[3] + Number.EPSILON) * 100
+                  )}
+                  %{" "}
+                </span>
+                <br />
+                <span>
+                  Position didn't change:{" "}
+                  {Math.round(
+                    (positions[1] / positions[3] + Number.EPSILON) * 100
+                  )}
+                  %{" "}
+                </span>
+                <br />
+              </div>
+            </div>
           </div>
         </div>
       </div>
     );
   }
 }
-const mapStateToProps = state => ({
-  circuit_result: state.circuit_result,
-  counter: state.counter
-});
+const mapStateToProps = state => {
+  return state;
+};
 
-export default connect(mapStateToProps, { getResultsByCircuit })(
-  Circuit_result
-);
+export default connect(mapStateToProps, actionCreators)(Circuit_result);

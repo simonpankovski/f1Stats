@@ -16,15 +16,15 @@ class Seasons extends Component {
     };
     this.handleChange = this.handleChange.bind(this);
   }
-  getResults(year) {
-    this.props.getSeasonResults(year);
+  getResults() {
+    this.props.getSeasonResults();
   }
   componentDidMount() {
-    this.getResults(this.state.year);
+    this.getResults();
     this.unsubscribe = store.subscribe(() => {
       let temp = store.getState().season_results.season_results;
-
-      this.setState({ races: temp }, this.createChart(temp));
+      let res = temp.filter(item => item.race.year == this.state.year);
+      this.setState({ races: res }, this.createChart(res));
     });
     this.createSlider();
   }
@@ -113,10 +113,17 @@ class Seasons extends Component {
   }
   createChart(results) {
     $("#chart").empty();
-
-    var margin = { top: 20, right: 60, bottom: 30, left: 60 },
-      width = window.innerWidth * 0.8 - margin.left - margin.right,
-      height = window.innerHeight - 150 - margin.top - margin.bottom;
+  
+    var margin = { top: 40, right: 50, bottom: 40, left: 70 },
+      width =
+        $("#chart")
+          .parent()
+          .width() -
+        margin.left -
+        margin.right,
+      height =$("#chart")
+      .parent()
+      .height() - margin.top - margin.bottom;
 
     var x = d3.scalePoint().range([0, width]);
     var y = d3.scaleLinear().range([height, 0]);
@@ -130,22 +137,28 @@ class Seasons extends Component {
       .append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
+      
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     let temp = this.processResults(results);
+    
     let data = temp[0];
 
     let circuits = temp[1];
-
-    Object.values(temp[2]).forEach(element => {
+    if(Object.entries(temp[0]).length>0){
+    Object.values(temp[0]).forEach(element => {
+      console.log(element.results.length==circuits.length)
       $("#driversList").append(
-        "<div style='margin:5px;width:60px;display:inline-block;'><span style='margin-right:5px;background:" +
+        "<div style='margin:5px;padding:4px;display:flex;justify-content:space-between;'><span style='margin-right:5px;background:" +
           this.getConstructorColor(element.constructor) +
-          ";width:20px;height:20px;border-radius:50%;display:inline-block;'></span><li style='display:inline-block;font-size:0.8em;'>" +
+          ";width:20px;height:20px;border-radius:50%;display:inline-block;border:solid black 1px;'></span><li style='display:inline-block;font-size:0.8em;'><b>" +
           element.name.slice(0, 3) +
-          "</li><br/></div>"
+          "</b></li> <span>"
+          +element.results[element.results.length - 1].points +
+          "</span></div>"
       );
     });
+  }
     let maxItem = [];
     Object.values(data).forEach(item => {
       let temp1 = Object.values(item.results);
@@ -313,45 +326,58 @@ class Seasons extends Component {
       });
     });
   }
-  handleSubmit(year) {
-    this.getResults(year);
-    this.unsubscribe = store.subscribe(() => {
-      let temp = store.getState().season_results.season_results;
-      $(".clearThis").empty();
-      this.setState({ races: temp }, this.createChart(temp));
-    });
-  }
+
   handleChange(e) {
-    this.setState({ year: e.target.value }, this.handleSubmit(e.target.value));
+    $(".clearThis").empty();
+    let res = store
+      .getState()
+      .season_results.season_results.filter(
+        item => item.race.year == parseInt(e.target.value)
+      );
+
+    this.setState({ races: res, year: e.target.value }, this.createChart(res));
   }
   render() {
     return (
       <div>
         <div className="row ">
-          <div className="col-2">
-            <ul
-              id="driversList"
-              style={{
-                listStyleType: "none",
-                columnWidth: "3em",
-                width: "100%"
-              }}
-              className="mt-5 clearThis"
-            ></ul>
+          <div className="col-12 col-md-2" style={{paddingRight:"0"}}>
+            <div className="card">
+              <h5 className="card-header" style={{height:"55px"}}>Drivers</h5>
+              <div className="card-body" style={{padding:"0"}}>
+                <ul
+                  id="driversList"
+                  style={{
+                    listStyleType: "none",
+                    padding: "0",
+                    height: "85vh",
+                    overflowY:"auto"
+                  }}
+                  className="clearThis style-1"
+                ></ul>
+              </div>
+            </div>
           </div>
-          <div className="col-10">
-            <div id="chart"></div>
-            <div className="range-slider">
-              <div className="container">
-                <input
-                  className="range-slider__range"
-                  type="range"
-                  defaultValue="2019"
-                  min="1958"
-                  max="2019"
-                  onChange={this.handleChange}
-                />
-                <span className="range-slider__value">0</span>
+
+          <div className="col-12 col-md-10">
+            <div className="card" style={{height:"94vh"}}>
+              <div className="card-header">
+                <div className="range-slider">
+                  
+                    <input
+                      className="range-slider__range"
+                      type="range"
+                      defaultValue={this.state.year}
+                      min="1958"
+                      max="2019"
+                      onChange={this.handleChange}
+                    />
+                    <span className="range-slider__value">0</span>
+                  
+                </div>
+              </div>
+              <div className="card-body" style={{padding:"0"}}>
+                <div id="chart" style={{height:"100%"}}></div>
               </div>
             </div>
           </div>

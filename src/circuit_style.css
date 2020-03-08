@@ -1,16 +1,8 @@
 #second{
-    background: white;
-    border:white;
-    border-radius: 1px;
-    color: black;
+    
+    
+    color: white;
+    
 }
-#header{
-   background: #ff1601c2!important; 
-}
-#second:focus{
-    border: none;
-}
-.card{
-    background: black!important;
-    border: white!important;
-}
+
+
