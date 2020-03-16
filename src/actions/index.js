@@ -117,6 +117,21 @@ export const getSeasonResults = year => async dispatch => {
 
   });
 };
+export const getSeasonResultsByYear= year => async dispatch => {
+  const login = await axios.post("http://localhost:9090/users/login", {
+    username: "test1@gmail.com",
+    password: "password"
+  });
+  const res = await axios.get("http://localhost:9090/results/year/"+year, {
+    headers: { Authorization: login.data.token }
+  });
+  
+  dispatch({
+    type: "SEASON_RESULTS_YEAR",
+    payload: res.data
+
+  });
+};
 export const getDriverWins =() => async dispatch => {
   const login = await axios.post("http://localhost:9090/users/login", {
     username: "test1@gmail.com",
@@ -132,4 +147,32 @@ export const getDriverWins =() => async dispatch => {
 
   });
 };
+export const getFantasySelections =() => async dispatch => {
+  const login = await axios.post("http://localhost:9090/users/login", {
+    username: "test1@gmail.com",
+    password: "password"
+  });
+  const res = await axios.get("http://localhost:9090/users/drivers", {
+    headers: { Authorization: login.data.token }
+  });
+  const res1 = await axios.get("http://localhost:9090/users/constructor", {
+    headers: { Authorization: login.data.token }
+  });
+  dispatch({
+    type: "FANTASY",
+    payload: {drivers:res.data,constructor:res1.data}
 
+  });
+};
+export const saveFantasySelection = (drivers,constructor)=> async dispatch =>{
+  const login = await axios.post("http://localhost:9090/users/login", {
+    username: "test1@gmail.com",
+    password: "password"
+  });
+  await axios.post("http://localhost:9090/users/fantasy",drivers, { 
+    headers: { Authorization: login.data.token }
+  });
+  await axios.post("http://localhost:9090/users/constructor",constructor, { 
+    headers: { Authorization: login.data.token }
+  });
+}

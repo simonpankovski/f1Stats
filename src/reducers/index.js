@@ -8,7 +8,8 @@ import constructor_result from './Constructor_results'
 import driver_win from './Driver_wins'
 import driver from './Drivers'
 import constructor from './Constructors'
-
+import season_result_year from './Results_year'
+import fantasy from './Fantasy'
 const rootReducer = combineReducers({
     season_results,
     circuit,
@@ -17,6 +18,9 @@ const rootReducer = combineReducers({
     driver_result,
     constructor,
     constructor_result,
-    driver_win
+    driver_win,
+    
+    season_result_year,
+    fantasy
 });
 export default rootReducer;
