@@ -10,6 +10,7 @@ import driver from './Drivers'
 import constructor from './Constructors'
 import season_result_year from './Results_year'
 import fantasy from './Fantasy'
+import securityReducer from './securityReducer'
 const rootReducer = combineReducers({
     season_results,
     circuit,
@@ -19,7 +20,7 @@ const rootReducer = combineReducers({
     constructor,
     constructor_result,
     driver_win,
-    
+    securityReducer,
     season_result_year,
     fantasy
 });
