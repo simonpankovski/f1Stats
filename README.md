@@ -5,7 +5,7 @@
 ## Upastvo
 
 Clone na repoto, run npm install i posle toa run npm start za startuvanje na front-end aplikacijata.
-
+Potrebno e da se registrirate i potoa logirate za da moze da ja pregledate sodrzinata na stranata. 
 
 ## Available Scripts
 
