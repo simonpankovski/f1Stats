@@ -7,6 +7,10 @@
 Clone na repoto, run npm install i posle toa run npm start za startuvanje na front-end aplikacijata.
 Potrebno e da se registrirate i potoa logirate za da moze da ja pregledate sodrzinata na stranata. 
 
+## Opis
+
+Web aplikacija za vizueliziranje podatoci od F1 trki koristejki d3js. Dopolnitelno moznost za izbor na fantasy league vozaci za 2020 godina, no ne e kompletiran toj del poradi otkazanite trki i odlozuvanje na sezonata.
+
 ## Available Scripts
 
 In the project directory, you can run:
