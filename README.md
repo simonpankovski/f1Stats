@@ -2,7 +2,7 @@
 
 ### FRONT-END
 
-##Upastvo
+## Upastvo
 
 Clone na repoto, run npm install i posle toa run npm start za startuvanje na front-end aplikacijata.
 
