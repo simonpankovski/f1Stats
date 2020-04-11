@@ -1,4 +1,6 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### Simon Pankovski, 172028, seminarksi proekt po veb programiranje - FINKI
+
+### FRONT-END
 
 ## Available Scripts
 
