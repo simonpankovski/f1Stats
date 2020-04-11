@@ -11,6 +11,11 @@ Potrebno e da se registrirate i potoa logirate za da moze da ja pregledate sodrz
 
 Web aplikacija za vizueliziranje podatoci od F1 trki koristejki d3js. Dopolnitelno moznost za izbor na fantasy league vozaci za 2020 godina, no ne e kompletiran toj del poradi otkazanite trki i odlozuvanje na sezonata.
 
+### Link do backend
+
+https://github.com/simonpankovski/f1Stats-backend
+
+
 ## Available Scripts
 
 In the project directory, you can run:
