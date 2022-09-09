@@ -1,17 +1,8 @@
-### Simon Pankovski, 172028, seminarksi proekt po veb programiranje - FINKI
-
 ### FRONT-END
 
-## Upastvo
+Web application for visualizing historical F1 data using the Ergast API. Partially implemented F1 fantasy section for the 2020 season, unfinished because half of the season was canceled.
 
-Clone na repoto, run npm install i posle toa run npm start za startuvanje na front-end aplikacijata.
-Potrebno e da se registrirate i potoa logirate za da moze da ja pregledate sodrzinata na stranata. 
-
-## Opis
-
-Web aplikacija za vizuelizacija na podatoci od poranesni F1 trki koristejki d3js. Dopolnitelno moznost za izbor na fantasy league vozaci za 2020 godina, no ne e kompletiran toj del poradi otkazanite trki i odlozuvanje na sezonata.
-
-### Link do backend
+### Backend code
 
 https://github.com/simonpankovski/f1Stats-backend
 
